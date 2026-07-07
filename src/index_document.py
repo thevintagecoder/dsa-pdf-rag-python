@@ -1,6 +1,15 @@
 #Now we will work on the chunking and loading of the pdf 
 
+import warnings
 
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich import box
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+console = Console()
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -46,23 +55,77 @@ def create_chunks(raw_docs):
 
     return chunked_docs
 
+# def main():
+#     raw_docs = load_pdf()
+#     print("PDF loaded successfully")
+#     print(f"Number of PDF pages loaded : {len(raw_docs)}")
+
+#     chunked_docs = create_chunks(raw_docs)
+#     print("Chunking completed")
+#     print(f"Number of chunks created: {len(chunked_docs)}")
+
+#     print("\n First chunk preview: ")
+#     print("-"*50)
+#     print(chunked_docs[0].page_content[:1000])
+
+#     print("\nFirst chunk metadata:")
+#     print("-" * 50)
+#     print(chunked_docs[0].metadata)
+
+# if __name__ == "__main__":
+#     main()
+
 def main():
+    console.print(
+        Panel.fit(
+            "[bold cyan]DSA PDF RAG - Document Indexing[/bold cyan]",
+            border_style="cyan"
+        )
+    )
+
     raw_docs = load_pdf()
-    print("PDF loaded successfully")
-    print(f"Number of PDF pages loaded : {len(raw_docs)}")
-
     chunked_docs = create_chunks(raw_docs)
-    print("Chunking completed")
-    print(f"Number of chunks created: {len(chunked_docs)}")
 
-    print("\n First chunk preview: ")
-    print("-"*50)
-    print(chunked_docs[0].page_content[:1000])
+    summary_table = Table(
+        title="Indexing Summary",
+        box=box.ROUNDED,
+        show_header=True,
+        header_style="bold magenta"
+    )
 
-    print("\nFirst chunk metadata:")
-    print("-" * 50)
-    print(chunked_docs[0].metadata)
+    summary_table.add_column("Task", style="cyan")
+    summary_table.add_column("Status", justify="center")
+    summary_table.add_column("Result", style="green")
+
+    summary_table.add_row("PDF Loading", "✅", f"{len(raw_docs)} pages loaded")
+    summary_table.add_row("Chunking", "✅", f"{len(chunked_docs)} chunks created")
+
+    console.print(summary_table)
+
+    console.print("\n[bold yellow]First Chunk Preview[/bold yellow]")
+    console.print(
+        Panel(
+            chunked_docs[0].page_content[:1000],
+            border_style="yellow"
+        )
+    )
+
+    console.print("\n[bold yellow]First Chunk Metadata[/bold yellow]")
+
+    metadata_table = Table(
+        box=box.SIMPLE,
+        show_header=True,
+        header_style="bold blue"
+    )
+
+    metadata_table.add_column("Key", style="cyan")
+    metadata_table.add_column("Value", style="white")
+
+    for key, value in chunked_docs[0].metadata.items():
+        metadata_table.add_row(str(key), str(value))
+
+    console.print(metadata_table)
+
 
 if __name__ == "__main__":
     main()
-
