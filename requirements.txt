@@ -1,0 +1,10 @@
+langchain 
+langchain-community #pdf loader 
+langchain-text-splitters #chunking
+langchain-google-genai #
+langchain-pinecone
+pinecone
+google-genai
+python-dotenv #load API keys from .env
+pypdf
+rich
